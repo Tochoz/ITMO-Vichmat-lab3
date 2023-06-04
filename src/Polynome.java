@@ -18,6 +18,7 @@ public class Polynome {
     public Polynome() {
         head = new Monome(1, 0);
     }
+    // Конструктор копирующий, можно в него передавать не только голову но и хвост
 
     // Полином - моном
     public Polynome(double a, int n) {
@@ -25,8 +26,7 @@ public class Polynome {
     }
 
     // Создание полинома копии
-    public Polynome(Polynome ref) {
-//        Monome otherMon = ref.head;
+    public Polynome(Monome otherMon) {
 //        this.head = new Monome(otherMon.a, otherMon.n);
 //        Monome temphead = this.head;
 //        while (otherMon.next != null) {
@@ -131,29 +131,30 @@ public class Polynome {
 //        return res;
     }
 
-    //Возвращает значение полинома в точке x
+    //Возвращает значение полинома в точке x по Горнеру
     public double value(double x) {
         double b = head.a;
         Monome m = head.next;
-        int i;
-        for (i = head.n - 1; i >= 0 && m != null; i--) {
-            if (i > m.n) {
+        int j;
+        // Проходим в цикле, контроллируем если дошли до конца связноного списка, или до конца степеней
+        for (j = head.n - 1; j > 0 && m != null; j--) {
+            if (j > m.n) { // Умножаем пока есть промежуточные степени между элементами связного списка
                 b *= x;
-            } else {
+            } else { // Умножаем на значение и прибавляем коэффициент
                 b = m.a + b * x;
                 m = m.next;
             }
         }
-        while (i >= 0) {
+        while (j > 0) { // Умножаем если j не дошла до 0
             b *= x;
-            i--;
+            j--;
         }
         return b;
     }
 
     // Метод выводит строковое представление полинома в консоль
     public void print() {
-        for (Monome t = head; t != null; t = t.next) {
+        for (Monome t = head; t != null; t = t.next) { // TODO достаточно числа
             if (t.a < 0) { // Знак
                 System.out.print("-");
             } else if (t.a > 0 && t != head) {

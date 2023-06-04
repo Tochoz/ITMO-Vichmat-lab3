@@ -54,16 +54,6 @@ public class Lagrange {
         return result;
     }
 
-    //Возвращает значение полинома в точке x
-    public double value(double x) {
-        return poly.value(x);
-    }
-
-    //Печататет полином
-    public void print() {
-        poly.print();
-    }
-
     public Polynome getPoly() {
         return poly;
     }
