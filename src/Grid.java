@@ -42,6 +42,10 @@ public class Grid {
         return result;
     }
 
+    public int length(){
+        return points.length;
+    }
+
     public double f(double x) {
         return Math.sin(x); // Любая функция
     }

@@ -1,18 +1,25 @@
 public class Polynome {
-    private final double EPS = 1e-5;
+    private final double EPS = 0.00001; // Число считаемое нулём (точность)
 
-    private class Monome{
-        private double a;
-        private int n;
-        private Monome next;
+    private class Monome{ // Класс монома
+        private double a; // Основание степени монома
+        private int n; // Показатель степени монома
+        private Monome next; // Указатель на следующий моном для реализации связного списка
 
+        // Конструктор на вход получает основание и показатель степени соответственно
         public Monome(double a, int n) {
             this.n = n;
             this.a = a;
         }
 
+        // Копирующий конструктор на вход получает объект монома
+        public Monome (Monome ref){
+            this.n = ref.n;
+            this.a = ref.a;
+        }
+
     }
-    private Monome head;
+    private Monome head; // Ссылка на моном, являющийся началом связного списка. Содержит старший коэффициент полинома. Степени в списке убывают
 
     // Создание полинома 1
     public Polynome() {
@@ -20,28 +27,39 @@ public class Polynome {
     }
     // Конструктор копирующий, можно в него передавать не только голову но и хвост
 
-    // Полином - моном
+    // Полином содержащий один моном
     public Polynome(double a, int n) {
         head = new Monome(a, n);
     }
 
-    // Создание полинома копии
+    // Создание полинома копии, на вход начало связного списка (подсписка)
     public Polynome(Monome otherMon) {
-//        this.head = new Monome(otherMon.a, otherMon.n);
-//        Monome temphead = this.head;
-//        while (otherMon.next != null) {
-//            temphead.next = new Monome(otherMon.a, otherMon.n);
-//            otherMon = otherMon.next;
-//        }
-        // Создание копии связного списка
+        this.head = new Monome(otherMon); // Инициализация новой головы копией данной
+        Monome temphead = this.head; // Указатель на конец нового полинома
+        while (otherMon.next != null) { // Пока полином с которого копируем не кончился
+            temphead.next = new Monome(otherMon); // Копируем элементы списка
+            otherMon = otherMon.next; // Движемся вперёд по копируемому полиному
+        }
     }
 
-    // Метод вставляет моном next после cur
+    // Метод вставляет моном next после элемента cur
     private void insert(Monome cur, Monome next){
-//        Monome temp = cur.next;
+//        Monome temp = cur.next;  Сохраняем ссылку на элемент после cur
 //        cur.next = next;
 //        next.next = temp;
     }
+
+    public void change(double val) { // Смена свободного члена (для полинома первой степени)
+        if(Math.abs(val) < EPS) { // Если значение ноль, убираем моном
+            head.next = null;
+        } else if(head.next != null) { // Если есть моном свободного члена
+            Monome m = head.next; // Моном свободного члена
+            m.a = val; // Смена значения на заданное
+        } else { // Иначе, монома свободного члена нет, создаём новый с заданным значением
+            head.next = new Monome(val, 0);
+        }
+    }
+
 
     // Умножение текущего полинома на число
     public void multiply(double a){
@@ -51,18 +69,19 @@ public class Polynome {
 
     // Метод удаляет элемент идущей после заданного
     private void delete(Monome mon){
-        mon.next = mon.next.next;
+        mon.next = mon.next.next; // Отвязываем удаляемый элемент от предыдущего и делаем ссылку на элемент после удаляемого
     }
 
-    // Умножение полинома на другой полином, возвращает результат
-    public Polynome multiply(Polynome pal){
+    // Умножение текущего полинома на другой полином
+    public void multiply(Polynome pal){
+
         // Проверка pal.head == null head == null, вернуть новый пустой
-        // Создание нового полинома-результата, res = new Polynome(pal.head.a * head.a, pal.head.n + head.n)
+        // Создание головы нового связного списка-результата, res_head = new Monome(pal.head.a * head.a, pal.head.n + head.n)
         // Переменные ссылки по всем трём полиномам m1 m2 m3
         // Переменная для текущей степени pow
         // Проход по элементам текущего полинома
         // while m1 != null
-//            m3 = res.head;
+//            m3 = res_head; Указатель в начало получаемого полинома
         //    проходим по всему второму полиному
         //    while m2 != null
         //        pow = m1.n + m2.n
@@ -75,28 +94,27 @@ public class Polynome {
         //    Переход к умножению на следующим множитель из первого полинома
         //    m1=m1.next
         //    m2=pal.head
-        //return res
+
+        //head = res_head; Замена старого на получившийся
     }
 
-    // Метод складывает текущий полином с входящим, возвращает результат
-    public Polynome sum(Polynome pal){
-        //Создание пустого третьего полинома
-//        Polynome res = new Polynome();
-//        res.head = new Monome(0, 0);
-//        Monome m3 = res.head;  указатель по нему
+    // Метод складывает текущий полином с входящим
+    public void sum(Polynome pal){
+        // Создание головы нового связного списка-результата
+//        Monome res_head = new Monome(0, 0);
+//        Monome m3 = res_head;  Указатель по нему
 
         //Проход по спискам со сравнением степеней
 //        Monome m1 = head;
 //        Monome m2 = pal.head;
-//        double coeff; значение коэффициента
-//        while (m1 != null && m2 != null) {
-//            //Если степени равны, сложить коэффициенты
-//            if (m1.n == m2.n) {
+//        double coeff;  Значение коэффициента
+//        while (m1 != null && m2 != null) { // Пока не дойдём до конца хотябы одного из полиномов
+//            if (m1.n == m2.n) { // Если степени равны, сложить коэффициенты
 //                coeff = m1.a + m2.a;
 //                //Если сумма не равна нулю, добавить новое слагаемое в третий полином
-//                if (Math.abs(coeff)<EPS) {
+//                if (Math.abs(coeff) > EPS) {
 //                    insert(m3, new Monome(m1.n, coeff));
-//                    m3 = m3.next;
+//                    m3 = m3.next;  Переход в конец нового полинома
 //                }
 //                //Сдвинуть ссылки
 //                m1 = m1.next;
@@ -105,12 +123,12 @@ public class Polynome {
 
 //            } else {
 //                //Если степени не равны, добавить слагаемое с большей в третий полином
-//                if (m1.n >= m2.n) {
+//                if (m1.n > m2.n) {
 //                    insert(m3, new Monome(m1));
 //                    m3 = m3.next;
-//                    //Сдвинуть ссылку
+//                    //Сдвинуть ссылку у полинома из которого добавили
 //                    m1 = m1.next;
-//                } else {
+//                } else { Аналогично для второго полинома если у него степень больше
 //                    insert(m3, new Monome(m2));
 //                    m3 = m3.next;
 //                    //Сдвинуть ссылку
@@ -119,50 +137,43 @@ public class Polynome {
 //            }
 //        }
         // Если один из полиномов нулевой, копируем другой и привязываем копию
-//        if (m1 != null) {
-//            m3.next = new Polynome(m1).head;
-//        }
-//        if (m2 != null) {
-//            m3.next = new Polynome(m2).head;
-//        }
-//
-//        res.head = res.head.next; // Сдвигаем голову на 1 вперёд
-//
+        // Или если дошли до конца одного из полиномов, копируем хвост второго
+//        if (m1 != null) { m3.next = new Polynome(m1).head; }
+//        if (m2 != null) { m3.next = new Polynome(m2).head; }
+
+        // Заменяем старый связный список на новый
+//        head = res_head.next; // Сдвигаем голову на 1 вперёд т.к. все вставки происходили в последующие элементы
 //        return res;
     }
 
     //Возвращает значение полинома в точке x по Горнеру
     public double value(double x) {
-        double b = head.a;
+        double res = head.a;  // Переменная куда будет вычисляться результат изначально записан старший коэффициент
         Monome m = head.next;
-        int j;
-        // Проходим в цикле, контроллируем если дошли до конца связноного списка, или до конца степеней
+        int j; // Текущая степень, идёт от n-1 до 0
+        // Проходим в цикле, контроллируем пока не дошли до конца связноного списка, или до конца степеней
         for (j = head.n - 1; j > 0 && m != null; j--) {
-            if (j > m.n) { // Умножаем пока есть промежуточные степени между элементами связного списка
-                b *= x;
-            } else { // Умножаем на значение и прибавляем коэффициент
-                b = m.a + b * x;
-                m = m.next;
+            if (j > m.n) { // Если в списке нет монома с данной степенью, коэффициент нулевой
+                res *= x;
+            } else { // Иначе прибавляем ещё и коэффициент
+                res = m.a + res * x;
+                m = m.next; // Идём дальше по полиному
             }
         }
-        while (j > 0) { // Умножаем если j не дошла до 0
-            b *= x;
+        while (j > 0) { // Продолжаем умножать если степень не дошла до 0
+            res *= x;
             j--;
         }
-        return b;
+        if(Math.abs(res) < EPS) res = 0;
+
+        return res;
     }
 
     // Метод выводит строковое представление полинома в консоль
     public void print() {
-        for (Monome t = head; t != null; t = t.next) { // TODO достаточно числа
-            if (t.a < 0) { // Знак
-                System.out.print("-");
-            } else if (t.a > 0 && t != head) {
-                System.out.print("+");
-            }
-            System.out.printf(" %.6e ", Math.abs(t.a)); // Основание
-            System.out.print("* x ^");
-            System.out.print(" " + t.n + " "); // Степень
+        for (Monome t = head; t != null; t = t.next) { // Проход по всему связному списку
+            System.out.printf("%15.6E", t.a); // Основание
+            System.out.printf("(%15.6E) ", t.n); // Показатель степени
         }
         System.out.println();
     }

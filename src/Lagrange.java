@@ -7,54 +7,59 @@ public class Lagrange {
     public Lagrange(Grid grid) {
         xArray = grid.getArgs();
         yArray = grid.getVals();
-        poly = new Polynome();
+        poly = new Polynome(); // Объект собираемого полинома
         interpolate(); // Метод интерполяции
     }
 
     // Метод с помощью значений полученных из сетки вычисляет полином
     private void interpolate() {
-        poly = new Polynome();
+        Polynome t = new Polynome(1, 1);  // Вспомогательный полином степени 1, у него будем менять свободный член
+        Polynome f_i = new Polynome(); // i-я элементарная функция
 
-        //Вспомогательный полином x^1
-        Polynome x = new Polynome(1, 1);
-        //Множители элементарных функций
-        Polynome[] multipliers = new Polynome[xArray.length];
-        for (int i = 0; i < xArray.length; i++) {
-            multipliers[i] = x.sum(new Polynome(-1 * xArray[i], 0));
+        double c = 1; // Константа для вычисления элементарной функции
+
+        // ------------------------------  Вычисление первой элементарной функции  ------------------------------------------
+        c /= (xArray[0] - xArray[1]); // Первый множитель в знаменателе константы
+        t.change((-1) * xArray[1]); // Меняем свободный член для первого множителя эл функции
+        f_i.sum(t); // Устанавливаем f_i = t, т.к. в f_i пустой то sum() просто скопирует
+
+        for(int j = 2; j < xArray.length; j++) { // Продолжаем вычислять константу и элементарную функцию j = 2..n
+            c /= (xArray[0] - xArray[j]); // Делим константу на следующий множитель
+            t.change((-1) * xArray[j]); // Меняем свободный член, получая следующий множитель эл функции
+            f_i.multiply(t); // Умножаем на следующий множитель
         }
 
-        for (int i = 0; i < xArray.length; i++) {
-            poly = poly.sum(elementaryFunction(i, multipliers));
+        f_i.multiply(c * yArray[0]); // Умножение множителей на константу и на y_i
+        poly.sum(f_i); // Прибавление элементарной функции умноженной на y_i в интерполянту
+
+        // --------------------------  Вычисление всех оставшихся элементарных функций  -----------------------------
+        for(int i = 1; i < yArray.length; i++) {
+            f_i = new Polynome(); // Очередная элементарная функция
+
+            c = 1 / (xArray[i] - xArray[0]); // Первый множитель в знаменателе константы
+            t.change((-1) * xArray[0]); // Меняем свободный член для первого множителя эл функции
+            f_i.sum(t); // Устанавливаем f_i = t, т.к. в f_i пустой то sum() просто скопирует
+
+            // Продолжаем вычислять константу и элементарную функцию !ДО i ЭЛЕМЕНТА!
+            for(int j = 1; j < i; j++) {
+                c /= (xArray[i] - xArray[j]); // Делим константу на следующий множитель
+                t.change((-1) * xArray[j]); // Меняем свободный член, получая следующий множитель эл функции
+                f_i.multiply(t); // Умножаем на следующий множитель
+            }
+
+            // После i элемента
+            for(int j = i+1; j < xArray.length; j++) { // Продолжаем вычислять константу и элементарную функцию j = 2..n
+                c /= (xArray[i] - xArray[j]); // Делим константу на следующий множитель
+                t.change((-1) * xArray[j]); // Меняем свободный член, получая следующий множитель эл функции
+                f_i.multiply(t); // Умножаем на следующий множитель
+            }
+
+            f_i.multiply(c * yArray[i]); // Умножение множителей на константу и на y_i
+            poly.sum(f_i); // Прибавление элементарной функции умноженной на y_i в интерполянту
         }
     }
 
-    //Вовзвращает коэффициент элементарной функции
-    private double coef_el(int i, int j) {
-        return 1 / (xArray[i] - xArray[j]);
-    }
-
-    //Элементарная функция для одного значения сетки
-    private Polynome elementaryFunction(int ind, Polynome[] multipliers) {
-        Polynome result = new Polynome(yArray[ind], 0);
-
-        // Умножение до текущего индекса
-        for (int i = 0; i < ind; i++) {
-            //Умножение полинома на новый множитель
-            multipliers[i].multiply(coef_el(ind, i));
-            result = result.multiply(multipliers[i]);
-        }
-
-        // Умножения после текущего индекса
-        for (int i = ind + 1; i < xArray.length; i++) {
-            //Умножение полинома на новый множитель
-            multipliers[i].multiply(coef_el(ind, i));
-            result = result.multiply(multipliers[i]);
-        }
-
-        return result;
-    }
-
-    public Polynome getPoly() {
+    public Polynome getPoly(){
         return poly;
     }
 }
