@@ -164,7 +164,7 @@ public class Polynome {
             res *= x;
             j--;
         }
-        if(Math.abs(res) < EPS) res = 0;
+        if(Math.abs(res) < EPS) res = 0;// TODO comment
 
         return res;
     }
