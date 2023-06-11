@@ -1,18 +1,14 @@
 public class Lagrange {
     private Polynome poly; // Результирующий полином
-    private double[] xArray;  // Массив аргументов
-    private double[] yArray;  // Массив значений
 
     // Конструктор, на вход сетка значений
     public Lagrange(Grid grid) {
-        xArray = grid.getArgs();
-        yArray = grid.getVals();
         poly = new Polynome(); // Объект собираемого полинома
-        interpolate(); // Метод интерполяции
+        interpolate(grid.getArgs(), grid.getVals()); // Метод интерполяции
     }
 
     // Метод с помощью значений полученных из сетки вычисляет полином
-    private void interpolate() {
+    private void interpolate(double[] xArray, double[] yArray) {
         Polynome t = new Polynome(1, 1);  // Вспомогательный полином степени 1, у него будем менять свободный член
         Polynome f_i = new Polynome(); // i-я элементарная функция
 
@@ -29,8 +25,8 @@ public class Lagrange {
             f_i.multiply(t); // Умножаем на следующий множитель
         }
 
-        f_i.multiply(c * yArray[0]); // Умножение множителей на константу и на y_i
-        poly.sum(f_i); // Прибавление элементарной функции умноженной на y_i в интерполянту
+        // Умножение множителей на константу и на y_i
+        poly.sum(f_i.multiply(c * yArray[0])); // Прибавление элементарной функции умноженной на y_i в интерполянту
 
         // --------------------------  Вычисление всех оставшихся элементарных функций  -----------------------------
         for(int i = 1; i < yArray.length; i++) {
@@ -54,8 +50,8 @@ public class Lagrange {
                 f_i.multiply(t); // Умножаем на следующий множитель
             }
 
-            f_i.multiply(c * yArray[i]); // Умножение множителей на константу и на y_i
-            poly.sum(f_i); // Прибавление элементарной функции умноженной на y_i в интерполянту
+            // Умножение множителей на константу и на y_i
+            poly.sum(f_i.multiply(c * yArray[i])); // Прибавление элементарной функции умноженной на y_i в интерполянту
         }
     }
 

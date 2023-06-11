@@ -1,11 +1,12 @@
-import java.util.*;
 
 public class Main {
-
     private static Grid grid;
 
     public static void main(String[] args) {
-        grid = new Grid(6, 0, 2); // Создание сетки значений
+        /*
+         Функция f(x) указывается в методе f класса сетки
+        */
+        grid = new Grid(6, 0, 1); // Создание сетки значений
 
         // Создание объектов класса и получение полиномов-результатов
         Newton newton = new Newton(grid);
@@ -19,20 +20,20 @@ public class Main {
         System.out.println();
         System.out.print("Lagrange: ");
         lagrangeAns.print();
-//        System.out.print("Newton: ");
-//        newtonAns.print();
-//        System.out.println();
+        System.out.print("Newton:   ");
+        newtonAns.print();
+        System.out.println();
 
         // Метод, выводящий в виде сравнительной таблицы результаты
         printTable(lagrangeAns, newtonAns);
     }
 
-    // Метод выводи сравнительную таблицу
+    // Метод выводи сравнительную таблицу двух полиномов
     private static void printTable(Polynome lagrangeAns, Polynome newtonAns) {
         double[] xArray = grid.getArgs(); // Получение массивов аргументов и значений для удобного доступа
         double[] yArray = grid.getVals();
 
-        System.out.println("\t\t\tx\t\t\tf(x)\t\t\tLagrange\t\t\tNewton"); // Заголовки таблицы
+        System.out.println("№\t\t\tx\t\t\tf(x)\t\t\tLagrange\t\t\tNewton"); // Заголовки таблицы
         for (int i = 0; i < xArray.length - 1; i++) {
             System.out.print(i + "  "); // Номер узла
 
