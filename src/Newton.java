@@ -10,7 +10,7 @@ public class Newton {
     private void interpolate(double[] xArray, double[] yArray) {
         poly = new Polynome(yArray[0], 0); // Создание объекта полинома с первым значением функции
 
-        //Разделенные разности
+        //Массив разделённых разностей для каждой неизвестной
         double[] divDifferences = new double[xArray.length];
         for (int i = 0; i < xArray.length; i++) { // Записываем изначально соответствующие значения функции
             divDifferences[i] = yArray[i];
@@ -24,8 +24,8 @@ public class Newton {
         // Цикл по каждой неизвестной
         for (int i = 0; i < xArray.length - 1; i++) {
             // Для каждой неизвестной считаем строку разделённых разностей через метод
-            for (int j = 0; j < xArray.length - i - 1; j++)
-                divDifferences[j] = dividedDifference(divDifferences[j], divDifferences[j + 1], xArray[j], xArray[j + i + 1]);
+            computeDividedDifference(i, divDifferences, xArray);
+
             // Умножение на полином первой степени, меняем свободный член и умножаем
             x.change(-1 * xArray[i]);
             multiplier.multiply(x);
@@ -35,9 +35,11 @@ public class Newton {
         }
     }
 
-    //Возвращает разделенную разность следующего порядка
-    private double dividedDifference(double a, double b, double x1, double x2) {
-        return (a - b) / (x1 - x2);
+    // Метод считает разделённые разности для каждой неизвестной,
+    // на вход индекс неизвестной, массив предыдущих разностей, массив аргументов функции
+    private void computeDividedDifference(int i, double[] divDifferences, double[] xArray) {
+        for (int j = 0; j < xArray.length - i - 1; j++)
+            divDifferences[j] = (divDifferences[j] - divDifferences[j + 1]) / (xArray[j] - xArray[j + i + 1]);
     }
 
     public Polynome getPoly(){
